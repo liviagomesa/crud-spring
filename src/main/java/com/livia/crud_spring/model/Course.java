@@ -13,6 +13,11 @@ import lombok.Data;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    // @JsonProperty("_id") // Poderia ser utilizado para que essa propriedade fosse
+    // retornada no json com o nome "_id", como no Angular
+
+    // @JsonIgnore // Se não quiser usar DTO para excluir essa propriedade no json
+    // retornado
     private Long id;
 
     @Column(length = 200, nullable = false) // boa prática sempre colocar o tamanho da coluna para que não seja
