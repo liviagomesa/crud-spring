@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.livia.crud_spring.model.Course;
 import com.livia.crud_spring.repository.CourseRepository;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -48,6 +48,17 @@ public class CourseController {
         // argumento porque ela será gerada autoamticamente pelo banco de
         // dados
         return ResponseEntity.status(HttpStatus.CREATED).body(courseRepository.save(course));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Course> update(@PathVariable Long id, @RequestBody Course course) {
+        return courseRepository.findById(id).map(c -> {
+            c.setName(course.getName());
+            c.setCategory(course.getCategory());
+            Course updatedCourse = courseRepository.save(c);
+            return ResponseEntity.ok().body(updatedCourse);
+        })
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

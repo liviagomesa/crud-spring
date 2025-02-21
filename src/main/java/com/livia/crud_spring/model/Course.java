@@ -1,5 +1,7 @@
 package com.livia.crud_spring.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +15,7 @@ import lombok.Data;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    // @JsonProperty("_id") // Poderia ser utilizado para que essa propriedade fosse
+    @JsonProperty("_id") // Utilizado para que essa propriedade seja
     // retornada no json com o nome "_id", como no Angular
 
     // @JsonIgnore // Se não quiser usar DTO para excluir essa propriedade no json
