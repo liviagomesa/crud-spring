@@ -1,5 +1,7 @@
 package com.livia.crud_spring.model;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,14 +16,22 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
-@Data // Equivalente a @Getter @Setter @RequiredArgsConstructor @ToString
-      // @EqualsAndHashCode
+// Equivalente a @Getter @Setter @RequiredArgsConstructor @ToString @EqualsAndHashCode
+@Data
 @Entity
+// Anotação do hibernate para fazer remoção lógica (soft delete) sem precisar
+// alterar todo o código do controller
+@SQLDelete(sql = "UPDATE Course SET status = 'Inativo' WHERE id = ?")
+// Anotação para adicionar essa cláusula em todo SELECT para nunca retornar
+// linhas removidas
+// Where(clause = "status = 'Ativo'") // Deprecated
+@SQLRestriction(value = "status <> 'Inativo'")
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonProperty("_id") // Utilizado para que essa propriedade seja
-    // retornada no json com o nome "_id", como no Angular
+    // Utilizado para que essa propriedade seja retornada no json com o nome "_id",
+    // como no Angular
+    @JsonProperty("_id")
 
     // @JsonIgnore // Se não quiser usar DTO para excluir essa propriedade no json
     // retornado
@@ -40,4 +50,10 @@ public class Course {
     @Pattern(regexp = "Back-end|Front-end") // Depois substituiremos por enum
     @Column(length = 10, nullable = false)
     private String category;
+
+    @NotNull
+    @Length(max = 10)
+    @Pattern(regexp = "Ativo|Inativo") // Depois substituiremos por enum
+    @Column(length = 10, nullable = false)
+    private String status = "Ativo"; // Ao ser criado já vai como ativo
 }
