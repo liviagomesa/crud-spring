@@ -1,11 +1,11 @@
 package com.livia.crud_spring.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.livia.crud_spring.exceptions.RecordNotFoundException;
 import com.livia.crud_spring.model.Course;
 import com.livia.crud_spring.repository.CourseRepository;
 
@@ -26,8 +26,8 @@ public class CourseService {
 
     // O id é do tipo Long (L maiúsculo), logo, é um objeto, logo, pode assumir
     // valor null
-    public Optional<Course> findById(@NotNull @Positive Long id) {
-        return courseRepository.findById(id);
+    public Course findById(@NotNull @Positive Long id) {
+        return courseRepository.findById(id).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
     // Não é necessário ter a propriedade id no objeto recebido no argumento porque
@@ -36,21 +36,19 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public Optional<Course> update(@NotNull @Positive Long id, @Valid Course course) {
+    public Course update(@NotNull @Positive Long id, @Valid Course course) {
         return courseRepository.findById(id).map(c -> {
             c.setName(course.getName());
             c.setCategory(course.getCategory());
             Course updatedCourse = courseRepository.save(c);
             return updatedCourse;
-        });
+        }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
-    public boolean delete(@NotNull @Positive Long id) {
-        return courseRepository.findById(id).map(c -> {
-            courseRepository.delete(c);
-            return true;
-        })
-                .orElse(false);
+    public void delete(@NotNull @Positive Long id) {
+        courseRepository.delete(courseRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id)));
+
     }
 
 }

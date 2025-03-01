@@ -3,12 +3,13 @@ package com.livia.crud_spring.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.livia.crud_spring.model.Course;
@@ -38,37 +39,34 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public List<Course> list() {
+    public @ResponseBody List<Course> list() {
         return courseService.list();
     }
 
     @GetMapping("/{id}")
     // O id é do tipo Long (L maiúsculo), logo, é um objeto, logo, pode assumir
     // valor null
-    public ResponseEntity<Course> findById(@PathVariable @NotNull @Positive Long id) {
-        return courseService.findById(id).map(c -> ResponseEntity.ok().body(c))
-                .orElse(ResponseEntity.notFound().build());
+    public Course findById(@PathVariable @NotNull @Positive Long id) {
+        return courseService.findById(id);
     }
 
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     // Não é necessário ter a propriedade id no objeto recebido no argumento porque
     // ela será gerada autoamticamente pelo banco de dados
-    public ResponseEntity<Course> create(@RequestBody @Valid Course course) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.create(course));
+    public Course create(@RequestBody @Valid Course course) {
+        return courseService.create(course);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course course) {
-        return courseService.update(id, course)
-                .map(c -> ResponseEntity.ok().body(c))
-                .orElse(ResponseEntity.notFound().build());
+    public Course update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course course) {
+        return courseService.update(id, course);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable @NotNull @Positive Long id) {
-        if (courseService.delete(id))
-            return ResponseEntity.noContent().build();
-        return ResponseEntity.notFound().build();
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable @NotNull @Positive Long id) {
+        courseService.delete(id);
     }
 
 }
