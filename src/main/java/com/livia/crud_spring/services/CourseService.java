@@ -48,7 +48,7 @@ public class CourseService {
     public CourseDTO update(@NotNull @Positive Long id, @Valid @NotNull CourseDTO course) {
         return courseRepository.findById(id).map(c -> {
             c.setName(course.name());
-            c.setCategory(course.category());
+            c.setCategory(courseMapper.convertCategoryValue(course.category()));
             return courseMapper.toDTO(courseRepository.save(c)); // O save retorna o curso atualizado
         }).orElseThrow(() -> new RecordNotFoundException(id));
     }
