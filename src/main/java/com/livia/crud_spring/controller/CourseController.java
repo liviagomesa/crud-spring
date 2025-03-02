@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.livia.crud_spring.model.Course;
+// O controller trabalha APENAS com DTO, só quem sabe do model é o serviço
+import com.livia.crud_spring.dtos.CourseDTO;
 import com.livia.crud_spring.services.CourseService;
 
 import jakarta.validation.Valid;
@@ -39,14 +40,14 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public @ResponseBody List<Course> list() {
+    public @ResponseBody List<CourseDTO> list() {
         return courseService.list();
     }
 
     @GetMapping("/{id}")
     // O id é do tipo Long (L maiúsculo), logo, é um objeto, logo, pode assumir
     // valor null
-    public Course findById(@PathVariable @NotNull @Positive Long id) {
+    public CourseDTO findById(@PathVariable @NotNull @Positive Long id) {
         return courseService.findById(id);
     }
 
@@ -54,12 +55,12 @@ public class CourseController {
     @ResponseStatus(code = HttpStatus.CREATED)
     // Não é necessário ter a propriedade id no objeto recebido no argumento porque
     // ela será gerada autoamticamente pelo banco de dados
-    public Course create(@RequestBody @Valid Course course) {
+    public CourseDTO create(@RequestBody @Valid @NotNull CourseDTO course) {
         return courseService.create(course);
     }
 
     @PutMapping("/{id}")
-    public Course update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course course) {
+    public CourseDTO update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid @NotNull CourseDTO course) {
         return courseService.update(id, course);
     }
 

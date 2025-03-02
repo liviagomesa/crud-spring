@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
-// Equivalente a @Getter @Setter @RequiredArgsConstructor @ToString @EqualsAndHashCode
+// Equivalente a @Getter @Setter @RequiredArgsConstructor @ToString @EqualsAndHashCode (toda entidade precisa ter um construtor vazio e setters para configurar os valores)
 @Data
 @Entity
 // Anotação do hibernate para fazer remoção lógica (soft delete) sem precisar
