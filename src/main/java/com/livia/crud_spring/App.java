@@ -34,6 +34,12 @@ public class App {
 			l.setCourse(c);
 			c.getLessons().add(l);
 
+			Lesson l2 = new Lesson();
+			l2.setName("Desenvolvimento");
+			l2.setYoutubeUrl("youtube.co2");
+			l2.setCourse(c);
+			c.getLessons().add(l2);
+
 			courseRepository.save(c);
 		};
 	}
