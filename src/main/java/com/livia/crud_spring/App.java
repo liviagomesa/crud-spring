@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.livia.crud_spring.enums.Category;
 import com.livia.crud_spring.model.Course;
+import com.livia.crud_spring.model.Lesson;
 import com.livia.crud_spring.repository.CourseRepository;
 
 @SpringBootApplication
@@ -20,9 +21,19 @@ public class App {
 	CommandLineRunner initDatabase(CourseRepository courseRepository) {
 		return args -> {
 			courseRepository.deleteAll();
+
 			Course c = new Course();
 			c.setName("Angular com Spring");
 			c.setCategory(Category.FRONT_END);
+
+			Lesson l = new Lesson();
+			l.setName("Introdução");
+			l.setYoutubeUrl("youtube.com");
+			// Necessário adicionar o curso à aula e a aula ao curso para ganhar desempenho
+			// na aplicação (menos chamadas ao banco de dados)
+			l.setCourse(c);
+			c.getLessons().add(l);
+
 			courseRepository.save(c);
 		};
 	}

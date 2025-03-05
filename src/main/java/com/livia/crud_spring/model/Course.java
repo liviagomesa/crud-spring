@@ -1,5 +1,8 @@
 package com.livia.crud_spring.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Length;
@@ -10,12 +13,14 @@ import com.livia.crud_spring.enums.Status;
 import com.livia.crud_spring.enums.converters.CategoryConverter;
 import com.livia.crud_spring.enums.converters.StatusConverter;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -59,4 +64,11 @@ public class Course {
     @Column(length = 10, nullable = false)
     @Convert(converter = StatusConverter.class)
     private Status status = Status.ACTIVE; // Ao ser criado já vai como ativo
+
+    // Melhor forma para não perder desempenho é com o mappedBy + criação da
+    // propriedade Course na entidade Lesson
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    // @JoinColumn(name = "course_id") // Cria a coluna da chave estrangeira na
+    // tabela lesson - NÃO UTILIZAR PARA NÃO PERDER DESEMPENHO
+    private List<Lesson> lessons = new ArrayList<>();
 }
