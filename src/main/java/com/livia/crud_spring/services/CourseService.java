@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import com.livia.crud_spring.dtos.CourseDTO;
 import com.livia.crud_spring.dtos.mapper.CourseMapper;
 import com.livia.crud_spring.exceptions.RecordNotFoundException;
+import com.livia.crud_spring.model.Lesson;
 import com.livia.crud_spring.repository.CourseRepository;
 
 import jakarta.validation.Valid;
@@ -41,14 +42,18 @@ public class CourseService {
 
     // Não é necessário ter a propriedade id no objeto recebido no argumento porque
     // ela será gerada autoamticamente pelo banco de dados
-    public CourseDTO create(@Valid @NotNull CourseDTO course) {
-        return courseMapper.toDTO(courseRepository.save(courseMapper.toEntity(course)));
+    public CourseDTO create(@Valid @NotNull CourseDTO courseDTO) {
+        return courseMapper.toDTO(courseRepository.save(courseMapper.toEntity(courseDTO)));
     }
 
-    public CourseDTO update(@NotNull @Positive Long id, @Valid @NotNull CourseDTO course) {
+    public CourseDTO update(@NotNull @Positive Long id, @Valid @NotNull CourseDTO courseDTO) {
         return courseRepository.findById(id).map(c -> {
-            c.setName(course.name());
-            c.setCategory(courseMapper.convertCategoryValue(course.category()));
+            c.setName(courseDTO.name());
+            c.setCategory(courseMapper.convertCategoryValue(courseDTO.category()));
+            c.getLessons().clear();
+            List<Lesson> updatedLessons = courseMapper.toEntity(courseDTO).getLessons(); // apenas para fazer o mapper
+                                                                                         // de lessonDTO para lesson
+            updatedLessons.forEach(l -> c.getLessons().add(l));
             return courseMapper.toDTO(courseRepository.save(c)); // O save retorna o curso atualizado
         }).orElseThrow(() -> new RecordNotFoundException(id));
     }

@@ -8,6 +8,7 @@ import com.livia.crud_spring.dtos.CourseDTO;
 import com.livia.crud_spring.dtos.LessonDTO;
 import com.livia.crud_spring.enums.Category;
 import com.livia.crud_spring.model.Course;
+import com.livia.crud_spring.model.Lesson;
 
 @Component
 public class CourseMapper {
@@ -30,6 +31,18 @@ public class CourseMapper {
             course.setId(courseDTO.id());
         course.setName(courseDTO.name());
         course.setCategory(convertCategoryValue(courseDTO.category()));
+
+        List<Lesson> lessons = courseDTO.lessons().stream().map(lessonDTO -> {
+            Lesson lesson = new Lesson();
+            lesson.setId(lessonDTO.id());
+            lesson.setName(lessonDTO.name());
+            lesson.setYoutubeUrl(lessonDTO.youtubeUrl());
+            lesson.setCourse(course);
+            return lesson;
+        }).toList();
+
+        course.setLessons(lessons);
+
         return course;
     }
 
