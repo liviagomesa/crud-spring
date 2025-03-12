@@ -2,19 +2,25 @@ package com.livia.crud_spring.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 // Model está encapsulado, ou seja, não é usado aqui também, apenas DTOs
 import com.livia.crud_spring.dtos.CourseDTO;
+import com.livia.crud_spring.dtos.CoursePageDTO;
 import com.livia.crud_spring.dtos.mapper.CourseMapper;
 import com.livia.crud_spring.exceptions.RecordNotFoundException;
+import com.livia.crud_spring.model.Course;
 import com.livia.crud_spring.model.Lesson;
 import com.livia.crud_spring.repository.CourseRepository;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 
 @Validated
@@ -25,11 +31,17 @@ public class CourseService {
     private final CourseMapper courseMapper;
 
     // Por segurança NUNCA retornamos a entidade, apenas DTO
-    public List<CourseDTO> list() {
-        return courseRepository.findAll()
+    // Repetimos as validações em todo o serviço para o caso de excluir no
+    // controller, ter mais de um controller ou esquecer (é uma segurança extra)
+    public CoursePageDTO list(@PositiveOrZero int pageNumber, @Positive @Max(100) int pageSize) {
+        // O findAll recebe um pageable, que é construído com PageRequest.of. Em vez de
+        // retornar numa List<Course>, retorna uma Page<Course>
+        Page<Course> page = courseRepository.findAll(PageRequest.of(pageNumber, pageSize));
+        List<CourseDTO> courses = page.getContent()
                 .stream()
                 .map(courseMapper::toDTO) // é o mesmo que c -> courseMapper.toDTO(c)
                 .toList();
+        return new CoursePageDTO(courses, page.getTotalPages(), page.getTotalElements());
     }
 
     // O id é do tipo Long (L maiúsculo), logo, é um objeto, logo, pode assumir

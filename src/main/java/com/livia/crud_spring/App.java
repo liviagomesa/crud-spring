@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 import com.livia.crud_spring.enums.Category;
 import com.livia.crud_spring.model.Course;
@@ -17,7 +18,8 @@ public class App {
 		SpringApplication.run(App.class, args);
 	}
 
-	@Bean // temporário para exemplo
+	@Bean
+	// @Profile("dev") // só será executado se o perfil for dev
 	CommandLineRunner initDatabase(CourseRepository courseRepository) {
 		return args -> {
 			courseRepository.deleteAll();
